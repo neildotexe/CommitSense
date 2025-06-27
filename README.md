@@ -65,10 +65,6 @@ Usage
     *   After you save and exit, it commits and pushes automatically.
         
 
-Example Workflow
-----------------
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   # Stage changes  git add .  # Generate, edit, commit, and push  ./auto-commit.sh   `
 
 Troubleshooting
 ---------------
