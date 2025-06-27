@@ -1,93 +1,128 @@
-AI Git Commit Helper
-====================
+CommitSense
+===========
 
-A lightweight Bash script that uses AI to generate descriptive commit messages and allows you to interactively edit and push them. Supports multiple AI backends (Groq, Google Gemini) and integrates seamlessly into your Git workflow.
+A Bash-based AI assistant for crafting and pushing Git commit messages with one command.
+
+Repository Structure
+--------------------
+
+*   auto-commit.sh – Core script that:
+    
+    *   Captures staged diffs (git diff --cached).
+        
+    *   Sends them to an AI (Groq or Gemini).
+        
+    *   Parses the JSON response for commit\_message and file summaries.
+        
+    *   Opens the draft in your $EDITOR for final edits.
+        
+    *   Commits and pushes to the remote.
+        
+*   daily\_commit.sh – Cron-driven report generator that:
+    
+    *   Loads your .env for credentials.
+        
+    *   Collects today’s commits (git log --since="midnight").
+        
+    *   Emails a summary to MAIL\_RECIPIENT.
+        
+*   GROQ\_API\_KEY=your\_groq\_keyGEMINI\_API\_KEY=your\_gemini\_keyMAIL\_RECIPIENT=your\_email@example.com
+    
+*   LICENSE – MIT license file.
+    
+*   .gitignore – Patterns to exclude temporary or sensitive files.
+    
 
 Features
 --------
 
-*   **AI-Generated Commit Messages**: Automatically generate JSON-formatted commit messages summarizing staged changes via AI.
+*   **AI-Powered Commit Drafts**: Automatically generate JSON-formatted commit messages.
     
-*   **Multi-Provider Support**: Plug in Groq or Google Gemini models by setting your API keys and model names.
+*   **Backend Flexibility**: Support for Groq and Google Gemini.
     
-*   **Interactive Editing**: Review and modify the AI’s suggested commit message in your favorite editor before committing.
+*   **Interactive Review**: Edit suggestions in your choice of editor.
     
-*   **Easy Configuration**: Load credentials and settings from a .env file.
-    
-*   **One-Step Commit & Push**: Stage all changes, generate a message, edit it, then commit and push with a single command.
+*   **Daily Summaries**: Optional cron job to email daily commit reports.
     
 
 Prerequisites
 -------------
 
-*   **Bash** (version 4.0+)
+*   Bash 4.0+
     
-*   **Git**
+*   Git
     
-*   **jq** for JSON parsing
+*   jq (JSON parsing)
     
-*   **curl** for HTTP requests
+*   curl (HTTP requests)
     
-*   **An editor** set in the $EDITOR environment variable (defaults to vi)
+*   Mail utility (mail or mailx) for daily reports
+    
+*   Editor defined in $EDITOR (defaults to vi)
     
 
 Installation
 ------------
 
-1.  git clone https://github.com/yourusername/ai-git-commit-helper.gitcd ai-git-commit-helper
+1.  git clone https://github.com/neildotexe/CommitSense.gitcd CommitSense
     
-2.  chmod +x auto-commit.sh
+2.  chmod +x auto-commit.sh daily\_commit.sh
     
-3.  sudo apt update && sudo apt install -y git jq curl
+3.  sudo apt update && sudo apt install -y git jq curl mailutils
     
 
 Configuration
 -------------
 
-1.  GROQ\_API\_KEY=your\_groq\_api\_key\_hereGEMINI\_API\_KEY=your\_gemini\_api\_key\_here
+1.  cp .env.example .env# then edit .env
     
-2.  AI\_SERVICE="groq" # or "gemini"GROQ\_AI\_MODEL\_NAME="llama3-70b-8192"GEMINI\_AI\_MODEL\_NAME="gemini-1.5-pro"
+2.  AI\_SERVICE="groq" # or "gemini"
     
-3.  export EDITOR=nano # or vim, code, etc.
+3.  export EDITOR=nano # or vim, code --wait, etc.
+    
+4.  (For daily reports) ensure MAIL\_RECIPIENT is set in .env.
     
 
 Usage
 -----
 
+### Interactive Commit
+
 1.  git add
     
-2.  ./auto-commit.sh
+2.  ./auto-commit.shThe script will generate, open for editing, commit, and push your message.
     
-    *   The script will generate a JSON commit message.
-        
-    *   It opens your editor to let you refine the message.
-        
-    *   After you save and exit, it commits and pushes automatically.
-        
 
+### Daily Commit Report
+
+1.  0 18 \* \* \* /absolute/path/to/CommitSense/daily\_commit.sh >> /absolute/path/to/CommitSense/cron.log 2>&1
+    
+2.  The script will email a summary of that day’s commits to the address in MAIL\_RECIPIENT.
+    
 
 Troubleshooting
 ---------------
 
-*   **No changes staged for commit.**: Make sure you have at least one file added via git add.
+*   **No staged changes:** Ensure you ran git add before auto-commit.sh.
     
-*   **Authentication errors**: Verify your API keys in .env and ensure network connectivity to the AI endpoints.
+*   **API errors:** Verify GROQ\_API\_KEY / GEMINI\_API\_KEY in .env.
     
-*   **JSON parsing errors**: The AI output must be valid JSON. If you see parsing failures, check that your AI prompt or response hasn’t introduced trailing commas.
+*   **Malformed JSON:** If the AI reply has parse errors, inspect the raw output and adjust prompts or retry.
+    
+*   **Email not sent:** Confirm mailutils (or similar) is installed and MAIL\_RECIPIENT is valid.
     
 
 Contributing
 ------------
 
-1.  Fork the repo and create a new branch: git checkout -b feature-name
+1.  git checkout -b feature/awesome
     
-2.  Make your changes and commit them.
+2.  git commit -am "Add awesome feature"
     
-3.  Submit a pull request describing your improvements.
+3.  Push and open a Pull Request.
     
 
 License
 -------
 
 This project is licensed under the MIT License.
-
