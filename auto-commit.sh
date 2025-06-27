@@ -41,7 +41,7 @@ generate_commit_message_groq() {
   -H "Authorization: Bearer $API_KEY" \
   -d "$PAYLOAD")
 
-  if [ $? -ne 0 ]; then
+ if [ $? -ne 0 ]; then
     echo "Error calling Groq API. Check if it's running and accessible."
     exit 1
   fi
@@ -72,7 +72,9 @@ generate_commit_message_gemini() {
   fi
 
   RESPONSE_TEXT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text')
-  RESPONSE_TEXT=$(echo "$RESPONSE_TEXT" | sed 's/^```json//' | sed 's/```$//')
+  RESPONSE_TEXT=$(echo "$RESPONSE_TEXT" | sed 's/^
+json//' | sed 's/
+$//')
   COMMIT_MESSAGE=$(echo "$RESPONSE_TEXT" | jq -r '.commit_message')
   FILE_CHANGES_JSON=$(echo "$RESPONSE_TEXT" | jq -r '.files')
 }
