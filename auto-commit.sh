@@ -9,9 +9,9 @@ fi
 git add .
 
 # Set the default AI service
-AI_SERVICE="groq" # options: groq, local, gemini
+AI_SERVICE="gemini" # options: groq, gemini
 GROQ_AI_MODEL_NAME="llama3-70b-8192" # options: llama3-8b-8192, llama3-70b-8192
-GEMINI_AI_MODEL_NAME="gemini-1.5-pro" # options: gemini-1.5-flash, gemini-1.5-pro, gemini-1.0-pro
+GEMINI_AI_MODEL_NAME="gemini-2.0-flash" # options: gemini-2.5-flash, gemini-2.5-pro, gemini-2.0-flash, gemini-2.0-flash-lite
 
 # Capture the git diff output
 DIFF_OUTPUT=$(git diff --cached)
@@ -71,10 +71,14 @@ generate_commit_message_gemini() {
     exit 1
   fi
 
+  # pull out the markdown-wrapped JSON
   RESPONSE_TEXT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text')
-  RESPONSE_TEXT=$(echo "$RESPONSE_TEXT" | sed 's/^
-json//' | sed 's/
-$//')
+
+  # strip the ```json fence at the top and the closing ```
+  RESPONSE_TEXT=$(echo "$RESPONSE_TEXT" \
+    | sed 's/^```json//; s/```$//')
+
+
   COMMIT_MESSAGE=$(echo "$RESPONSE_TEXT" | jq -r '.commit_message')
   FILE_CHANGES_JSON=$(echo "$RESPONSE_TEXT" | jq -r '.files')
 }
