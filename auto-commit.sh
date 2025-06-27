@@ -102,16 +102,15 @@ FILE_CHANGES=$(echo "$FILE_CHANGES_JSON" | jq -r '.[] | "\(.file): \(.changes)"'
 
 COMMIT_MESSAGE="$COMMIT_MESSAGE"$'\n\n'"$FILE_CHANGES"
 
-echo "Generated commit message:"
-echo "$COMMIT_MESSAGE"
+# === Interactive edit of the suggested commit message ===
+TMPFILE=$(mktemp /tmp/commit-msg.XXXXXX)
+echo "$COMMIT_MESSAGE" > "$TMPFILE"
+${EDITOR:-vi} "$TMPFILE"
+COMMIT_MESSAGE=$(< "$TMPFILE")
+rm "$TMPFILE"
 
-read -p "Do you want to use this commit message? (yes/no) " CONFIRM
+# Now commit and push with the edited message
+git commit -m "$COMMIT_MESSAGE"
+git push
 
-if [ "$CONFIRM" = "yes" ] || [ "$CONFIRM" = "y" ]; then
-  git commit -m "$COMMIT_MESSAGE"
-  echo "Changes have been committed."
-  git push
-  echo "Changes have been pushed."
-else
-  echo "Commit aborted."
-fi
+echo "Commit created and pushed with your edited message."
