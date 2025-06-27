@@ -113,6 +113,13 @@ ${EDITOR:-vi} "$TMPFILE"
 COMMIT_MESSAGE=$(< "$TMPFILE")
 rm "$TMPFILE"
 
+# Append AI-generated commit message and file changes to the JSON log file
+jq ". + [{\"date\": \"$(date)\", \"commit_message\": \"$COMMIT_MESSAGE\", \"files\": $FILE_CHANGES_JSON}]" "$LOG_FILE" > temp_log.json && mv temp_log.json "$LOG_FILE"
+# ------------------------------------------------------------
+
+
+# Confirmation message
+echo "Commit successfully created and logged in JSON format."
 # Now commit and push with the edited message
 git commit -m "$COMMIT_MESSAGE"
 git push
